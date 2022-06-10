@@ -382,7 +382,6 @@ class HeroRepositoryImplAlternative : HeroRepositoryAlternative {
         return ApiResponse(
             success = true,
             message = "ok",
-            heroes = heroes,
             prevPage = calculatePage(
                 page = page,
                 limit = limit,
@@ -395,7 +394,12 @@ class HeroRepositoryImplAlternative : HeroRepositoryAlternative {
                 heroes = heroes
 
             )[NEXT_PAGE_KEY],
-            lastUpdated = System.currentTimeMillis()
+            lastUpdated = System.currentTimeMillis(),
+            heroes = provideHeroes(
+                heroes = heroes,
+                page = page,
+                limit = limit
+            ),
         )
     }
 
@@ -413,11 +417,22 @@ class HeroRepositoryImplAlternative : HeroRepositoryAlternative {
         limit: Int
     ): Map<String, Int?> {
         val allHeroes = heroes.windowed(size = limit, step = limit, partialWindows = true)
-        require(page <= allHeroes.size) // Throw an exception if page requested is greater than the existing pages
+        require(page <= allHeroes.size) // Throw an exception if page requested is greater than the existing windowed pages
         val prevPage = if (page == 1) null else (page - 1)
         val nextPage = if (page == allHeroes.size) null else (page + 1)
 
         return mapOf(PREVIOUS_PAGE_KEY to prevPage, NEXT_PAGE_KEY to nextPage)
+    }
+
+    private fun provideHeroes(
+        heroes: List<Hero>,
+        page: Int,
+        limit: Int
+    ): List<Hero> {
+        val allHeroes = heroes.windowed(size = limit, step = limit, partialWindows = true)
+        require(page > 0 && page <= allHeroes.size) // Throw an exception if condition is false
+
+        return allHeroes[page-1]
     }
 
     private fun findHeroes(query: String?): List<Hero> {

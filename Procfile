@@ -1,0 +1,1 @@
+web: build/install/come.example.borutoserver/bin/come.example.borutoserver
