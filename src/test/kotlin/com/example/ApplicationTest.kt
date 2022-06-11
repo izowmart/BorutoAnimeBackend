@@ -72,42 +72,30 @@ class ApplicationTest {
     @Test
     fun `access all heroes endpoint,query all pages with non number, assert correct information`() {
         withTestApplication(moduleFunction = Application::module) {
-                handleRequest(HttpMethod.Get, "/boruto/heroes?page=jkkd").apply {
-                    assertEquals(
-                        expected = HttpStatusCode.BadRequest,
-                        actual = response.status()
-                    )
-                    val actual = Json.decodeFromString<ApiResponse>(response.content.toString())
-                    val expected = ApiResponse(
-                        success = false,
-                        message = "Only Numbers Allowed",
-                    )
-                    assertEquals(
-                        expected = expected,
-                        actual = actual
-                    )
-                }
+            handleRequest(HttpMethod.Get, "/boruto/heroes?page=jkkd").apply {
+                assertEquals(
+                    expected = HttpStatusCode.BadRequest,
+                    actual = response.status()
+                )
+                val actual = Json.decodeFromString<ApiResponse>(response.content.toString())
+                val expected = ApiResponse(
+                    success = false,
+                    message = "Only Numbers Allowed",
+                )
+                assertEquals(
+                    expected = expected,
+                    actual = actual
+                )
+            }
 
         }
     }
 
-    private fun calculatePage(page: Int): Map<String, Int?> {
-        var prevPage: Int? = page
-        var nextPage: Int? = page
-        if (page in 1..4) {
-            nextPage = nextPage?.plus(1)
-        }
-        if (page in 2..5) {
-            prevPage = prevPage?.minus(1)
-        }
-        if (page == 1) {
-            prevPage = null
-        }
-        if (page == 5) {
-            nextPage = null
-        }
-        return mapOf(PREVIOUS_PAGE_KEY to prevPage, NEXT_PAGE_KEY to nextPage)
-    }
+    private fun calculatePage(page: Int) = mapOf(
+        PREVIOUS_PAGE_KEY to if (page in 2..5) page.minus(1) else null,
+        NEXT_PAGE_KEY to if (page in 1..4) page.plus(1) else null
+    )
+
 
     @Test
     fun `access all heroes endpoint, assert correct information`() {
