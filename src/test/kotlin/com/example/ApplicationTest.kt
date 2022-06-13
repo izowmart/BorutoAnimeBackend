@@ -5,9 +5,10 @@ import com.example.repository.HeroRepository
 import com.example.repository.NEXT_PAGE_KEY
 import com.example.repository.PREVIOUS_PAGE_KEY
 import io.ktor.http.*
+import io.ktor.server.application.*
 import kotlin.test.*
 import io.ktor.server.testing.*
-import io.ktor.application.*
+
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -95,7 +96,6 @@ class ApplicationTest {
         PREVIOUS_PAGE_KEY to if (page in 2..5) page.minus(1) else null,
         NEXT_PAGE_KEY to if (page in 1..4) page.plus(1) else null
     )
-
 
     @Test
     fun `access all heroes endpoint, assert correct information`() {
